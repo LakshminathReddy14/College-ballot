@@ -1,0 +1,1223 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="theme-color" content="#f4f5f1">
+	<title>Campus Ballot | College Elections</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+	<style>
+		:root {
+			color-scheme: light;
+			--paper: #f4f7f3;
+			--white: #ffffff;
+			--ink: #142f2b;
+			--muted: #647a75;
+			--line: #e2eae4;
+			--green: #1b6859;
+			--green-dark: #133f39;
+			--green-soft: #eaf6f1;
+			--mint: #dff3ea;
+			--coral: #ea8f70;
+			--yellow: #f5cf6f;
+			--red: #bf4d48;
+			--shadow: 0 18px 40px rgba(19, 52, 45, 0.12);
+			--shadow-soft: 0 10px 24px rgba(19, 52, 45, 0.08);
+			--radius: 18px;
+		}
+		* { box-sizing: border-box; }
+		[hidden] { display: none !important; }
+		body { margin: 0; background: radial-gradient(circle at top, #f8fbf8 0%, var(--paper) 32%, #eef3f0 100%); color: var(--ink); font-family: "DM Sans", sans-serif; }
+		button, input, textarea { font: inherit; }
+		button { cursor: pointer; }
+		.shell { min-height: 100vh; display: grid; grid-template-columns: 252px minmax(0, 1fr); }
+		.sidebar { background: linear-gradient(180deg, #173b35 0%, #102e2b 100%); color: #edf4ef; padding: 28px 18px 20px; display: flex; flex-direction: column; min-height: 100vh; box-shadow: inset -1px 0 0 rgba(255,255,255,.08); }
+		.brand { display: flex; align-items: center; gap: 11px; padding: 2px 10px 30px; }
+		.brand-mark { width: 34px; height: 34px; border-radius: 12px; display: grid; place-items: center; background: linear-gradient(135deg, #f5d982 0%, #f0c85d 100%); color: #173b35; font-weight: 800; font-family: Manrope, sans-serif; box-shadow: 0 8px 18px rgba(245, 207, 111, 0.38); }
+		.brand-name { font: 800 16px Manrope, sans-serif; letter-spacing: 0; }
+		.brand-name span { display: block; color: #9db8ae; font: 500 10px "DM Sans", sans-serif; margin-top: 2px; }
+		.side-label { color: #9cb4aa; text-transform: uppercase; font-size: 10px; font-weight: 700; letter-spacing: 1.2px; padding: 0 11px; margin: 9px 0 10px; }
+		.portal-switch { display: grid; gap: 5px; }
+		.portal-link { width: 100%; border: 0; background: transparent; color: #c0d1ca; text-align: left; padding: 12px 13px; border-radius: 12px; display: flex; align-items: center; gap: 11px; font-size: 13px; transition: all .18s ease; }
+		.portal-link[hidden] { display: none; }
+		.portal-link:hover { background: rgba(255,255,255,.08); color: white; transform: translateX(2px); }
+		.portal-link.active { background: linear-gradient(135deg, #edf8f3, #dfeee9); color: var(--green-dark); font-weight: 700; box-shadow: inset 0 0 0 1px rgba(24, 95, 83, 0.12); }
+		.nav-icon { width: 20px; text-align: center; font-size: 15px; }
+		.side-election { border-top: 1px solid rgba(255,255,255,.13); margin: 27px 8px 0; padding: 20px 6px 0; }
+		.side-election small { color: #9cb4aa; font-size: 11px; }
+		.side-election strong { display: block; font: 700 13px Manrope, sans-serif; margin: 9px 0 12px; }
+		.side-status { display: inline-flex; align-items: center; gap: 6px; color: #d6eadc; font-size: 11px; }
+		.dot { width: 7px; height: 7px; background: #76cf93; border-radius: 50%; box-shadow: 0 0 0 3px rgba(118,207,147,.15); }
+		.side-footer { margin-top: auto; color: #9cb4aa; font-size: 11px; line-height: 1.6; padding: 18px 10px 0; }
+		.main { min-width: 0; padding: 28px clamp(22px, 4vw, 58px) 48px; }
+		.topbar { display: flex; justify-content: space-between; align-items: center; gap: 18px; max-width: 1260px; margin: 0 auto 28px; }
+		.crumb { color: var(--muted); font-size: 12px; }
+		.user-menu { display: flex; align-items: center; gap: 10px; font-size: 12px; font-weight: 600; }
+		.avatar { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 50%; background: linear-gradient(135deg, #dbf1e7, #cce7db); color: var(--green-dark); font-weight: 700; box-shadow: var(--shadow-soft); }
+		.content { max-width: 1260px; margin: auto; }
+		.view { display: none; animation: arrive .35s ease both; }
+		.view.active { display: block; }
+		@keyframes arrive { from { opacity: 0; transform: translateY(7px); } to { opacity: 1; transform: translateY(0); } }
+		.eyebrow { text-transform: uppercase; color: var(--green); font-weight: 700; letter-spacing: 1.35px; font-size: 10px; margin: 0 0 9px; }
+		h1, h2, h3, p { margin-top: 0; }
+		h1 { font: 800 clamp(25px, 3vw, 34px)/1.15 Manrope, sans-serif; letter-spacing: 0; margin-bottom: 8px; }
+		.intro { color: var(--muted); font-size: 14px; margin: 0; line-height: 1.6; }
+		.heading-row { display: flex; justify-content: space-between; align-items: flex-end; gap: 20px; margin-bottom: 26px; }
+		.button { border: 0; border-radius: 10px; padding: 11px 16px; background: linear-gradient(180deg, #1d6d5d 0%, #145c4d 100%); color: white; font-weight: 700; font-size: 12px; box-shadow: 0 10px 20px rgba(24, 94, 84, 0.18); transition: transform .16s ease, box-shadow .16s ease, filter .16s ease; }
+		.button:hover { filter: brightness(1.02); transform: translateY(-1px); box-shadow: 0 14px 24px rgba(24, 94, 84, 0.22); }
+		.button.secondary { background: white; border: 1px solid var(--line); color: var(--ink); box-shadow: none; }
+		.button.secondary:hover { background: #f8faf7; box-shadow: none; }
+		.button.danger { background: #f7e8e5; color: var(--red); }
+		.button.small { padding: 8px 11px; font-size: 11px; }
+		.metrics { display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid var(--line); border-radius: 16px; background: linear-gradient(180deg, #ffffff 0%, #fafcfb 100%); margin-bottom: 24px; overflow: hidden; box-shadow: var(--shadow-soft); }
+		.metric { padding: 19px 21px; border-right: 1px solid var(--line); background: rgba(255,255,255,0.6); }
+		.metric:last-child { border: 0; }
+		.metric-label { color: var(--muted); font-size: 11px; margin-bottom: 9px; }
+		.metric-value { font: 800 25px Manrope, sans-serif; }
+		.metric-note { color: var(--green); font-size: 10px; margin-left: 7px; font-weight: 600; }
+		.dashboard-grid { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(260px, .85fr); gap: 18px; align-items: start; }
+		.panel { background: white; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow-soft); }
+		.panel-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 17px 19px; border-bottom: 1px solid var(--line); }
+		.panel-head h2 { font: 700 14px Manrope, sans-serif; margin: 0; }
+		.panel-body { padding: 18px 19px; }
+		.election-banner { background: linear-gradient(135deg, #183d36 0%, #124339 100%); color: white; padding: 20px; border-radius: 14px; display: flex; justify-content: space-between; gap: 15px; align-items: center; margin-bottom: 16px; box-shadow: 0 16px 28px rgba(18, 67, 57, 0.2); }
+		.election-banner small { color: #b7d4c5; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; }
+		.election-banner h3 { font: 700 17px Manrope, sans-serif; margin: 7px 0 5px; }
+		.election-banner p { color: #c1d4cb; font-size: 11px; margin: 0; }
+		.banner-count { font: 800 23px Manrope, sans-serif; white-space: nowrap; text-align: right; }
+		.banner-count span { display: block; color: #bfd1c9; font: 500 10px "DM Sans", sans-serif; margin-top: 3px; }
+		.candidate-row { display: flex; align-items: center; gap: 12px; padding: 13px 0; border-bottom: 1px solid #edf0ec; }
+		.candidate-row:last-child { border-bottom: 0; }
+		.candidate-avatar { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; color: #234b41; font-size: 12px; font-weight: 700; background: linear-gradient(135deg, #e3efe8, #d5e8df); flex: 0 0 auto; }
+		.candidate-avatar.coral { background: linear-gradient(135deg, #fde6dd, #f7d3bf); color: #9a5237; }
+		.candidate-avatar.yellow { background: linear-gradient(135deg, #f9f0d3, #f3df9a); color: #80691b; }
+		.candidate-info { flex: 1; min-width: 0; }
+		.candidate-info strong { display: block; font-size: 12px; }
+		.candidate-info span { display: block; color: var(--muted); font-size: 10px; margin-top: 4px; }
+		.bar-wrap { width: min(32%, 170px); }
+		.bar-meta { display: flex; justify-content: space-between; font-size: 10px; color: var(--muted); margin-bottom: 5px; }
+		.bar { height: 6px; background: #edf1ed; border-radius: 999px; overflow: hidden; }
+		.bar i { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg, #1d6d5d 0%, #2d8c75 100%); }
+		.bar i.coral-fill { background: linear-gradient(90deg, #e58d6b 0%, #ebae86 100%); }
+		.bar i.yellow-fill { background: linear-gradient(90deg, #e5bf57 0%, #f1d479 100%); }
+		.activity { display: flex; gap: 11px; padding: 0 0 17px; margin-bottom: 15px; border-bottom: 1px solid #edf0ec; }
+		.activity:last-child { border: 0; padding-bottom: 0; margin-bottom: 0; }
+		.activity-icon { width: 26px; height: 26px; display: grid; place-items: center; background: var(--mint); border-radius: 8px; color: var(--green); font-size: 12px; flex: 0 0 auto; }
+		.activity p { font-size: 11px; line-height: 1.5; margin: 0; }
+		.activity small { color: var(--muted); display: block; font-size: 10px; margin-top: 3px; }
+		.host-tools { display: flex; gap: 8px; align-items: center; }
+		.pill { display: inline-flex; gap: 6px; align-items: center; color: var(--green); background: #e8f3ec; border-radius: 20px; padding: 6px 9px; font-size: 10px; font-weight: 700; white-space: nowrap; }
+		.portal-tabs { display: flex; border-bottom: 1px solid var(--line); gap: 22px; margin: -3px 0 22px; }
+		.portal-tab { color: var(--muted); font-size: 12px; padding: 0 0 12px; border: 0; border-bottom: 2px solid transparent; background: transparent; font-weight: 600; }
+		.portal-tab.active { color: var(--green); border-color: var(--green); }
+		.voter-layout { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(265px, .72fr); align-items: start; gap: 18px; }
+		.ballot { padding: 21px; }
+		.ballot h2 { font: 700 17px Manrope, sans-serif; margin: 0 0 6px; }
+		.ballot .sub { color: var(--muted); font-size: 11px; line-height: 1.5; margin-bottom: 19px; }
+		.field { margin-bottom: 15px; }
+		.field label { display: block; font-size: 11px; font-weight: 700; margin-bottom: 7px; }
+		.field input, .field textarea { width: 100%; border: 1px solid #dce4dd; background: #fcfdfb; border-radius: 6px; padding: 11px 12px; font-size: 12px; color: var(--ink); outline: none; }
+		.field input:focus, .field textarea:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(23,106,85,.1); }
+		.field textarea { resize: vertical; min-height: 95px; line-height: 1.5; }
+		.candidate-choice { width: 100%; display: flex; align-items: center; gap: 12px; padding: 13px; margin: 8px 0; background: white; border: 1px solid var(--line); border-radius: 7px; text-align: left; transition: border .15s, background .15s; }
+		.candidate-choice:hover { border-color: #9ab9a7; }
+		.candidate-choice.selected { border: 1.5px solid var(--green); background: #f1f8f3; }
+		.choice-radio { width: 16px; height: 16px; border: 1px solid #bdc9c0; border-radius: 50%; margin-left: auto; flex: 0 0 auto; }
+		.selected .choice-radio { border: 5px solid var(--green); }
+		.notice { padding: 12px 14px; background: linear-gradient(135deg, #f5f7f3, #eef6f1); border-radius: 10px; color: #586762; font-size: 10px; line-height: 1.55; margin: 16px 0; border: 1px solid #e7efe9; }
+		.notice strong { color: var(--ink); }
+		.student-dashboard { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+		.student-election-list { display: grid; gap: 12px; }
+		.election-card { border: 1px solid var(--line); border-radius: 14px; padding: 15px 16px; background: linear-gradient(180deg, #ffffff 0%, #fafcfb 100%); cursor: pointer; transition: border .15s, box-shadow .15s, transform .15s; box-shadow: 0 8px 18px rgba(17, 62, 56, 0.04); }
+		.election-card:hover { border-color: #9ab9a7; transform: translateY(-1px); }
+		.election-card.selected { border-color: var(--green); box-shadow: 0 12px 24px rgba(23,106,85,.09); }
+		.election-card-head { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; }
+		.election-card h3 { margin: 0 0 5px; font: 700 14px Manrope, sans-serif; }
+		.election-card p { margin: 0; font-size: 11px; color: var(--muted); line-height: 1.55; }
+		.election-tag { display: inline-flex; align-items: center; gap: 6px; padding: 5px 8px; border-radius: 999px; font-size: 9px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+		.election-tag.open { background: #e7f4eb; color: var(--green); }
+		.election-tag.closed { background: #f4f3ef; color: #5d5e61; }
+		.election-detail { margin-top: 18px; }
+		.detail-card { background: white; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; box-shadow: var(--shadow-soft); }
+		.detail-header { padding: 18px 20px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 12px; align-items: end; }
+		.detail-header h3 { margin: 0; font: 700 18px Manrope, sans-serif; }
+		.detail-body { padding: 18px 20px 22px; }
+		.candidate-vote-list { display: grid; gap: 12px; }
+		.vote-option { display: flex; align-items: center; gap: 12px; padding: 12px 10px; border: 1px solid var(--line); border-radius: 10px; background: linear-gradient(180deg, #fbfcfb, #f6faf7); }
+		.vote-option .candidate-info { flex: 1; }
+		.vote-option .candidate-info strong { display: block; font-size: 12px; }
+		.vote-option .candidate-info span { display: block; font-size: 10px; color: var(--muted); margin-top: 4px; }
+		.vote-option .vote-pill { color: var(--green); background: #e8f3ec; border-radius: 20px; padding: 6px 9px; font-size: 9px; font-weight: 700; }
+		.winner-box { padding: 18px; background: linear-gradient(135deg, #f3fcf6, #eef7f0); border: 1px solid #dfeee5; border-radius: 12px; display: flex; justify-content: space-between; gap: 12px; align-items: center; }
+		.winner-box strong { display: block; font: 700 16px Manrope, sans-serif; }
+		.winner-box span { color: var(--muted); font-size: 11px; }
+		.winner-badge { background: var(--green); color: white; padding: 7px 10px; border-radius: 999px; font-size: 9px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+		.selection-meta { display: flex; justify-content: space-between; gap: 12px; color: var(--muted); font-size: 11px; margin: 0 0 14px; }
+		.empty-list { padding: 18px; border: 1px dashed var(--line); border-radius: 8px; color: var(--muted); text-align: center; font-size: 11px; }
+		.info-panel { padding: 19px; }
+		.info-panel h3 { font: 700 13px Manrope, sans-serif; margin-bottom: 15px; }
+		.info-line { display: flex; justify-content: space-between; gap: 12px; font-size: 11px; padding: 9px 0; border-bottom: 1px solid #edf0ec; }
+		.info-line span:first-child { color: var(--muted); }
+		.info-line:last-of-type { border: 0; }
+		.privacy-box { background: linear-gradient(135deg, #fffaf1, #fff3d2); padding: 13px; border-radius: 10px; margin-top: 16px; font-size: 10px; line-height: 1.55; color: #6e5a2f; border: 1px solid #eedfac; }
+		.inline-message { min-height: 16px; color: var(--red); font-size: 11px; margin: 10px 0 0; }
+		.inline-message.success { color: var(--green); }
+		.success-state { display: none; text-align: center; padding: 34px 15px; }
+		.success-state.show { display: block; }
+		.success-check { margin: auto auto 13px; width: 42px; height: 42px; display: grid; place-items: center; border-radius: 50%; background: var(--mint); color: var(--green); font-size: 21px; }
+		.success-state h2 { font: 700 18px Manrope, sans-serif; margin-bottom: 7px; }
+		.success-state p { color: var(--muted); font-size: 12px; }
+		.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; }
+		.form-grid .wide { grid-column: 1 / -1; }
+		.party-content { display: none; }
+		.party-content.active { display: block; }
+		.voter-content { display: none; }
+		.voter-content.active { display: block; }
+		.empty-state { text-align: center; padding: 25px 16px; color: var(--muted); font-size: 12px; }
+		.empty-state strong { display: block; color: var(--ink); font-size: 13px; margin-bottom: 5px; }
+		.requests { display: grid; gap: 10px; }
+		.request-item { border: 1px solid var(--line); border-radius: 10px; padding: 12px; display: flex; align-items: flex-start; gap: 10px; background: linear-gradient(180deg, #ffffff 0%, #fafcfb 100%); }
+		.request-item .candidate-info { padding-top: 2px; }
+		.request-state { font-size: 9px; font-weight: 700; color: #80691b; background: #f8efd5; padding: 5px 7px; border-radius: 12px; white-space: nowrap; }
+		.toast { position: fixed; bottom: 20px; right: 22px; background: rgba(25,62,53,.96); color: white; padding: 12px 16px; border-radius: 10px; font-size: 12px; box-shadow: var(--shadow); opacity: 0; transform: translateY(10px); pointer-events: none; transition: .2s; z-index: 10; }
+		.toast.show { opacity: 1; transform: translateY(0); }
+		.modal-backdrop { position: fixed; inset: 0; background: rgba(14, 35, 31, .48); display: none; place-items: center; padding: 20px; z-index: 20; }
+		.modal-backdrop.open { display: grid; }
+		.modal { width: min(100%, 410px); padding: 23px; background: white; border-radius: 14px; box-shadow: var(--shadow); }
+		.modal h2 { font: 700 18px Manrope, sans-serif; margin-bottom: 8px; }
+		.modal p { color: var(--muted); font-size: 12px; line-height: 1.55; }
+		.modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 20px; }
+		.demo-label { color: #b9d5c7; font-size: 9px; letter-spacing: .7px; text-transform: uppercase; margin-top: 4px; }
+		#app-shell[hidden], #login-screen[hidden] { display: none; }
+		.login-screen { min-height: 100vh; display: grid; grid-template-columns: minmax(0, 1fr) minmax(370px, .85fr); background: linear-gradient(135deg, #f8fbf9 0%, #eef5f2 100%); }
+		.login-story { min-height: 100vh; padding: clamp(28px, 6vw, 76px); background: linear-gradient(135deg, #173b35 0%, #0f2b27 100%); color: #edf4ef; display: flex; flex-direction: column; justify-content: space-between; }
+		.login-brand { display: flex; align-items: center; gap: 11px; font: 800 16px Manrope, sans-serif; }
+		.login-brand span { display: block; color: #9db8ae; font: 500 10px "DM Sans", sans-serif; margin-top: 2px; }
+		.login-story-copy { max-width: 520px; padding: 65px 0; }
+		.login-story-copy .eyebrow { color: #b9d5c7; }
+		.login-story-copy h1 { max-width: 480px; font-size: clamp(34px, 5vw, 56px); line-height: 1.08; margin-bottom: 16px; }
+		.login-story-copy p { max-width: 390px; color: #bfd1c9; font-size: 14px; line-height: 1.7; margin: 0; }
+		.login-story-foot { color: #9db8ae; font-size: 11px; }
+		.login-main { display: grid; place-items: center; padding: 34px 24px; }
+		.login-card { width: min(100%, 390px); padding: 28px 26px; background: rgba(255,255,255,0.85); border: 1px solid rgba(255,255,255,0.8); border-radius: 22px; box-shadow: 0 20px 45px rgba(17, 52, 47, 0.08); backdrop-filter: blur(8px); }
+		.login-card h2 { font: 800 25px Manrope, sans-serif; margin: 0 0 7px; }
+		.login-card > p { color: var(--muted); font-size: 12px; line-height: 1.6; margin: 0 0 24px; }
+		.login-card .field { margin-bottom: 16px; }
+		.login-card .field label { font-size: 12px; }
+		.login-card .field input { min-height: 43px; font-size: 13px; }
+		.login-card .button { width: 100%; min-height: 43px; margin-top: 2px; }
+		.login-error { min-height: 18px; color: var(--red); font-size: 11px; margin: 10px 0 0; }
+		.demo-credentials { margin-top: 23px; padding-top: 17px; border-top: 1px solid var(--line); }
+		.demo-credentials h3 { margin: 0 0 10px; font: 700 11px Manrope, sans-serif; }
+		.demo-account { padding: 10px 0; border-top: 1px solid #edf0ec; font-size: 10px; line-height: 1.6; color: var(--muted); }
+		.demo-account strong { display: block; color: var(--ink); font-size: 11px; }
+		.demo-account code { color: var(--green-dark); font: 600 10px "DM Sans", sans-serif; }
+		.login-disclaimer { margin-top: 13px; color: var(--muted); font-size: 10px; line-height: 1.55; }
+		.logout-button { padding: 7px 10px; font-size: 10px; }
+		.profile-grid { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(280px, .75fr); gap: 18px; align-items: stretch; }
+		.profile-panel { padding: 0; }
+		.profile-hero { display: flex; align-items: center; gap: 14px; padding: 4px 0 18px; }
+		.profile-avatar { width: 52px; height: 52px; border-radius: 16px; display: grid; place-items: center; background: linear-gradient(135deg, #1d6d5d 0%, #2c8f78 100%); color: white; font: 800 18px Manrope, sans-serif; box-shadow: 0 10px 18px rgba(23, 106, 85, 0.25); }
+		.profile-hero h3 { margin: 0 0 5px; font: 800 21px Manrope, sans-serif; }
+		.profile-hero p { margin: 0; color: var(--muted); font-size: 12px; }
+		.profile-detail-list { display: grid; gap: 10px; margin-top: 12px; }
+		.profile-row { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 11px 12px; border-radius: 10px; background: linear-gradient(180deg, #f8faf8 0%, #f2f8f4 100%); border: 1px solid #edf3ee; }
+		.profile-row span { color: var(--muted); font-size: 11px; }
+		.profile-row strong { font-size: 12px; text-align: right; }
+		.profile-panel-header { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 17px 19px 0; }
+		.profile-panel-header h3 { margin: 0; font: 700 13px Manrope, sans-serif; }
+		.profile-chip { display: inline-flex; align-items: center; gap: 6px; padding: 5px 8px; background: #e9f4ee; color: var(--green); border-radius: 999px; font-size: 9px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+		.profile-stat-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; padding: 16px 19px 12px; }
+		.profile-stat { background: linear-gradient(180deg, #f8fbf9 0%, #eef7f2 100%); border: 1px solid #e4efe8; border-radius: 14px; padding: 15px 12px; text-align: center; }
+		.profile-stat strong { display: block; font: 800 22px Manrope, sans-serif; color: var(--green-dark); margin-bottom: 4px; }
+		.profile-stat small { color: var(--muted); font-size: 10px; }
+		.profile-chart-panel { margin: 8px 19px 19px; background: linear-gradient(180deg, #fbfdfb 0%, #f4faf6 100%); border: 1px solid #e4efe8; border-radius: 14px; padding: 14px 14px 12px; }
+		.chart-header { display: flex; justify-content: space-between; align-items: center; font-size: 10px; color: var(--muted); margin-bottom: 12px; }
+		.chart-header strong { color: var(--ink); font-size: 11px; }
+		.sparkline { height: 76px; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); align-items: end; gap: 7px; }
+		.sparkline span { display: block; border-radius: 999px 999px 8px 8px; background: linear-gradient(180deg, #87c0a8 0%, #1a6959 100%); box-shadow: inset 0 -8px 12px rgba(8, 52, 44, 0.12); }
+		.sparkline span:nth-child(odd) { background: linear-gradient(180deg, #bfe0d0 0%, #1d7865 100%); }
+		@media (max-width: 900px) {
+			.shell { grid-template-columns: 210px minmax(0,1fr); }
+			.metrics { grid-template-columns: repeat(2,1fr); }
+			.metric:nth-child(2) { border-right: 0; }
+			.metric:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
+			.dashboard-grid, .voter-layout { grid-template-columns: 1fr; }
+		}
+		@media (max-width: 700px) {
+			.login-screen { grid-template-columns: 1fr; }
+			.login-story { min-height: 235px; padding: 22px 24px; }
+			.login-story-copy { padding: 27px 0 17px; }
+			.login-story-copy h1 { font-size: 32px; max-width: 410px; }
+			.login-story-copy p, .login-story-foot { display: none; }
+			.login-main { padding: 30px 22px; }
+		}
+		@media (max-width: 620px) {
+			.shell { display: block; }
+			.sidebar { min-height: auto; padding: 13px 15px; }
+			.brand { padding: 0 3px 12px; }
+			.side-label, .side-election, .side-footer { display: none; }
+			.portal-switch { grid-template-columns: 1fr 1fr; }
+			.portal-link { justify-content: center; padding: 9px 7px; font-size: 11px; }
+			.main { padding: 18px 15px 35px; }
+			.topbar { margin-bottom: 23px; }
+			.heading-row { align-items: flex-start; flex-direction: column; }
+			.metrics { margin-bottom: 16px; }
+			.metric { padding: 15px; }
+			.metric-value { font-size: 22px; }
+			.election-banner { align-items: flex-start; }
+			.bar-wrap { width: 28%; }
+			.form-grid { grid-template-columns: 1fr; }
+			.form-grid .wide { grid-column: auto; }
+		}
+		@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+	</style>
+</head>
+<body>
+	<main id="login-screen" class="login-screen">
+		<section class="login-story">
+			<div class="login-brand"><div class="brand-mark">C</div><div>CAMPUS BALLOT<span>COLLEGE ELECTIONS</span></div></div>
+			<div class="login-story-copy"><p class="eyebrow">Student Council Elections · 2026</p><h1>A voice for every student.</h1><p>Sign in with your campus account to access the election portal assigned to your role.</p></div>
+			<div class="login-story-foot">Campus elections, made clear and accessible.</div>
+		</section>
+		<section class="login-main">
+			<div class="login-card">
+				<p class="eyebrow">Secure portal access</p><h2>Sign in</h2><p>Your account type determines which election portal you can access.</p>
+				<form id="login-form">
+					<div class="field"><label for="login-identity">Email</label><input id="login-identity" type="email" autocomplete="username" required placeholder="you@example.com"></div>
+					<div class="field"><label for="login-password">Password</label><input id="login-password" type="password" autocomplete="current-password" required placeholder="Enter your password"></div>
+					<button class="button" type="submit">Sign in to your portal</button><p class="login-error" id="login-error" aria-live="polite"></p>
+				</form>
+				<button class="button secondary" id="show-signup" type="button">Create a student account</button>
+				<button class="button secondary" id="show-host-signup" type="button">College staff? Create a host account</button>
+				<form id="signup-form" hidden>
+					<div class="field"><label for="signup-name">Full name</label><input id="signup-name" autocomplete="name" required maxlength="60" placeholder="Your name"></div>
+					<div class="field"><label for="signup-email">Student email</label><input id="signup-email" type="email" autocomplete="email" required maxlength="254" placeholder="you@mvsrec.edu.in"></div>
+					<button class="button secondary" id="send-student-verification" type="button">Send verification code</button>
+					<div class="field"><label for="signup-verification-code">Email verification code</label><input id="signup-verification-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" placeholder="6-digit code"></div>
+					<p class="login-disclaimer">Online signup requires an @mvsrec.edu.in email and a verification code.</p>
+					<div class="field"><label for="signup-student-id">Student ID</label><input id="signup-student-id" required minlength="4" maxlength="24" placeholder="Your college ID"></div>
+					<div class="field"><label for="signup-password">Create password</label><input id="signup-password" type="password" autocomplete="new-password" required minlength="8" maxlength="72" placeholder="At least 8 characters"></div>
+					<button class="button" type="submit">Create account</button><p class="login-error" id="signup-error" aria-live="polite"></p>
+					<button class="button secondary" id="show-login" type="button">Back to sign in</button>
+				</form>
+				<form id="host-signup-form" hidden>
+					<p class="eyebrow">Election organizer</p><h2>Create a host account</h2>
+					<div class="field"><label for="host-signup-name">Full name</label><input id="host-signup-name" autocomplete="name" required maxlength="60" placeholder="Your name"></div>
+					<div class="field"><label for="host-signup-email">Email address</label><input id="host-signup-email" type="email" autocomplete="email" required maxlength="254" placeholder="you@example.com"></div>
+					<div class="field"><label for="host-signup-password">Create password</label><input id="host-signup-password" type="password" autocomplete="new-password" required minlength="8" maxlength="72" placeholder="At least 8 characters"></div>
+					<div class="field"><label for="host-invite-code">Host access code (local demo)</label><input id="host-invite-code" type="password" autocomplete="off" placeholder="local-host-2026"></div>
+					<p class="login-disclaimer" style="margin-top: 0;">This prototype is not connected to a college site or staff directory. The access code is only a local app setting.</p>
+					<button class="button" type="submit">Create host account</button><p class="login-error" id="host-signup-error" aria-live="polite"></p>
+					<button class="button secondary" id="host-show-login" type="button">Back to sign in</button>
+				</form>
+				<div class="demo-credentials"><h3>Demo accounts</h3><div class="demo-account"><strong>Election host</strong><code>host@campus.edu</code> / <code>Host@2026</code></div><div class="demo-account"><strong>Student / candidate</strong><code>student@campus.edu</code> / <code>Student@2026</code></div></div>
+				<p class="login-disclaimer">Student accounts are stored in MongoDB. Email ownership and student identity are not independently verified in this prototype.</p>
+			</div>
+		</section>
+	</main>
+	<div class="shell" id="app-shell" hidden>
+		<aside class="sidebar">
+			<div class="brand"><div class="brand-mark">C</div><div class="brand-name">CAMPUS BALLOT<span>COLLEGE ELECTIONS</span></div></div>
+			<div class="side-label" id="side-label">Portal</div>
+			<nav class="portal-switch" aria-label="Choose portal">
+				<button class="portal-link active" data-view="host"><span class="nav-icon">▦</span> Host console</button>
+				<button class="portal-link" data-view="portal"><span class="nav-icon">◉</span> Voter &amp; party head</button>
+				<button class="portal-link" data-view="profile"><span class="nav-icon">◌</span> My profile</button>
+			</nav>
+			<div class="side-election"><small>Current election</small><strong id="side-election-name">Student Council 2026</strong><span class="side-status"><i class="dot"></i><span id="side-election-status">Voting open</span></span></div>
+			<div class="side-footer">A campus election workspace<br><span class="demo-label">Local prototype · demo data only</span></div>
+		</aside>
+		<main class="main">
+			<div class="topbar"><div class="crumb">Campus Ballot <span aria-hidden="true">/</span> <span id="crumb-current">Host console</span></div><div class="user-menu"><span id="user-label">Election host</span><div class="avatar" id="user-avatar">EH</div><button class="button secondary logout-button" id="logout-button" type="button">Sign out</button></div></div>
+			<div class="content">
+				<section id="host-view" class="view active" aria-labelledby="host-title">
+					<div class="heading-row"><div><p class="eyebrow">Election administration</p><h1 id="host-title">Good morning, host.</h1><p class="intro">Create and manage elections for your college community.</p></div><div class="host-tools"><select id="host-election-select" aria-label="Select an election" hidden></select><span class="pill"><i class="dot"></i><span id="host-status-pill">Voting open</span></span><button class="button secondary small" id="toggle-election">Close voting</button><button class="button small" id="show-create-election">Create election</button></div></div>
+					<form class="panel" id="create-election-form" hidden>
+						<div class="panel-head"><h2>New election</h2></div><div class="panel-body"><div class="form-grid"><div class="field"><label for="new-election-title">Election name</label><input id="new-election-title" required maxlength="100" placeholder="e.g. Debate Club Chair 2026"></div><div class="field"><label for="new-election-closes">Voting closes</label><input id="new-election-closes" type="date" required></div><div class="field wide"><label for="new-election-description">Position or description</label><input id="new-election-description" required maxlength="300" placeholder="Choose the next club chair"></div></div><button class="button" type="submit">Create and open election</button><button class="button secondary" id="cancel-create-election" type="button">Cancel</button><p class="login-error" id="create-election-error" aria-live="polite"></p></div>
+					</form>
+					<p class="empty-state" id="no-host-elections" hidden>You do not have an election yet. Create one to open voting for your community.</p>
+					<div class="metrics" id="host-election-metrics">
+						<div class="metric"><div class="metric-label">Eligible students</div><div class="metric-value">1,248</div></div>
+						<div class="metric"><div class="metric-label">Ballots submitted</div><div class="metric-value" id="vote-count">386</div><span class="metric-note" id="participation">31% participation</span></div>
+						<div class="metric"><div class="metric-label">Candidates</div><div class="metric-value" id="candidate-count">3</div></div>
+						<div class="metric"><div class="metric-label">Days remaining</div><div class="metric-value" id="days-left">4</div></div>
+					</div>
+					<div class="dashboard-grid" id="host-election-dashboard">
+						<section class="panel">
+							<div class="panel-head"><h2>Election overview</h2><button class="button secondary small" id="edit-election">Edit details</button></div>
+							<div class="panel-body">
+								<div class="election-banner"><div><small>Active election · 2026</small><h3 id="banner-election-name">Student Council 2026</h3><p id="banner-dates">Voting closes October 2 at 5:00 PM</p></div><div class="banner-count"><span id="banner-votes">386</span><span>ballots cast</span></div></div>
+								<div class="panel-head" style="padding:0 0 8px;border:0"><h2 style="font-size:12px">Candidate standings</h2><span class="crumb">Live tally</span></div>
+								<div id="standings"></div>
+							</div>
+						</section>
+						<section class="panel"><div class="panel-head"><h2>Recent activity</h2><span class="crumb">Today</span></div><div class="panel-body" id="activity-list"></div></section>
+					</div>
+					<section class="panel" style="margin-top:18px"><div class="panel-head"><h2>Party head submissions</h2><div><span class="crumb" id="request-count">0 pending</span> <button class="button secondary small" id="refresh-submissions" type="button">Refresh</button></div></div><div class="panel-body"><p class="metric-note">Only submissions for elections you host appear here.</p><div id="request-list"></div></div></section>
+					<p class="notice"><strong>Demo limitation:</strong> election data is stored in MongoDB, but student identities are not independently verified. Official elections require verified identity, auditable ballot handling, and independent security review.</p>
+				</section>
+
+				<section id="portal-view" class="view" aria-labelledby="portal-title">
+					<div class="heading-row"><div><p class="eyebrow">Student election portal</p><h1 id="portal-title">Your campus. Your voice.</h1><p class="intro">Cast your ballot or submit your candidacy for the student council.</p></div><span class="pill"><i class="dot"></i><span id="portal-status">Voting open</span></span></div>
+					<div class="portal-tabs" role="tablist" aria-label="Student portal views"><button class="portal-tab active" role="tab" aria-selected="true" data-tab="vote">Cast your vote</button><button class="portal-tab" role="tab" aria-selected="false" data-tab="party">Party head / candidate</button></div>
+					<div class="voter-content active" id="vote-tab">
+						<div class="student-dashboard">
+							<section class="panel">
+								<div class="panel-head"><h2>Current elections</h2><span class="crumb">Open for voting</span></div>
+								<div class="panel-body">
+									<div id="active-elections" class="student-election-list"></div>
+								</div>
+							</section>
+							<section class="panel">
+								<div class="panel-head"><h2>Completed elections</h2><span class="crumb">Final results</span></div>
+								<div class="panel-body">
+									<div id="completed-elections" class="student-election-list"></div>
+								</div>
+							</section>
+						</div>
+						<div class="election-detail" id="election-detail"></div>
+					</div>
+					<div class="party-content" id="party-tab">
+						<div class="voter-layout">
+							<section class="panel"><div class="ballot"><p class="eyebrow">Candidate registration</p><h2>Put your ideas on the ballot.</h2><p class="sub">Party heads and independent candidates can submit their details for host review.</p>
+								<form id="candidate-form"><div class="form-grid"><div class="field"><label for="candidate-name">Full name</label><input id="candidate-name" required maxlength="60" placeholder="Your name"></div><div class="field"><label for="candidate-id">Student ID</label><input id="candidate-id" required maxlength="24" placeholder="College ID"></div><div class="field"><label for="candidate-party">Party / group</label><input id="candidate-party" required maxlength="50" placeholder="Party or independent"></div><div class="field"><label for="candidate-election">Election</label><select id="candidate-election" required></select></div><div class="field"><label for="candidate-position">Position</label><input id="candidate-position" readonly placeholder="Select an election to view its position"></div><div class="field wide"><label for="candidate-manifesto">Manifesto summary</label><textarea id="candidate-manifesto" required maxlength="400" placeholder="What would you work to change for students?"></textarea></div></div><button class="button" type="submit" id="submit-candidacy">Submit for host review</button><p class="inline-message" id="candidate-message" aria-live="polite"></p></form>
+							</div></section>
+							<aside class="panel info-panel profile-panel"><h3>Before you submit</h3><div class="activity"><div class="activity-icon">1</div><p><strong>One candidate per student</strong><small>Use your own college ID and accurate details.</small></p></div><div class="activity"><div class="activity-icon">2</div><p><strong>Host review</strong><small>Your submission appears in the host console for review.</small></p></div><div class="activity"><div class="activity-icon">3</div><p><strong>Share your platform</strong><small>Keep manifesto details clear, respectful, and student-focused.</small></p></div><div class="privacy-box">Candidacy submissions are stored in the project database but are not officially filed or identity-verified.</div></aside>
+						</div>
+					</div>
+					<p class="notice"><strong>Demo only:</strong> do not enter sensitive personal data. This prototype does not verify identity or provide production-grade ballot security.</p>
+				</section>
+
+				<section id="profile-view" class="view" aria-labelledby="profile-title">
+					<div class="heading-row"><div><p class="eyebrow">Account overview</p><h1 id="profile-title">Your profile dashboard</h1><p class="intro">Review your activity, account details, and election access from one place.</p></div><span class="pill"><i class="dot"></i><span id="profile-role-badge">Student account</span></span></div>
+					<div class="profile-grid">
+						<section class="panel">
+							<div class="panel-head"><h2>Account summary</h2></div>
+							<div class="panel-body">
+								<div class="profile-hero">
+									<div class="profile-avatar" id="profile-avatar">U</div>
+									<div>
+										<h3 id="profile-name">User</h3>
+										<p id="profile-email">user@example.com</p>
+									</div>
+								</div>
+								<div class="profile-detail-list" id="profile-detail-list"></div>
+							</div>
+						</section>
+						<aside class="panel info-panel profile-panel">
+							<div class="profile-panel-header">
+								<h3>Quick stats</h3>
+								<span class="profile-chip">Live</span>
+							</div>
+							<div class="profile-stat-grid">
+								<div class="profile-stat"><strong id="profile-active-elections">0</strong><small>Open elections</small></div>
+								<div class="profile-stat"><strong id="profile-votes-cast">0</strong><small>Votes cast</small></div>
+								<div class="profile-stat"><strong id="profile-role-count">1</strong><small>Access level</small></div>
+							</div>
+							<div class="profile-chart-panel">
+								<div class="chart-header"><strong>Participation</strong><span>Last 7 days</span></div>
+								<div class="sparkline" aria-label="Participation trend chart">
+									<span style="height: 32%"></span>
+									<span style="height: 45%"></span>
+									<span style="height: 52%"></span>
+									<span style="height: 66%"></span>
+									<span style="height: 58%"></span>
+									<span style="height: 80%"></span>
+									<span style="height: 100%"></span>
+								</div>
+							</div>
+						</aside>
+					</div>
+					<section class="panel" style="margin-top:18px">
+						<div class="panel-head"><h2>Recent activity</h2><span class="crumb">This week</span></div>
+						<div class="panel-body" id="profile-activity"></div>
+					</section>
+				</section>
+			</div>
+		</main>
+	</div>
+	<div class="toast" id="toast" role="status" aria-live="polite"></div>
+	<div class="modal-backdrop" id="confirm-modal" role="dialog" aria-modal="true" aria-labelledby="confirm-title"><div class="modal"><p class="eyebrow">Final confirmation</p><h2 id="confirm-title">Submit your ballot?</h2><p id="confirm-copy">Your vote cannot be changed after it is submitted.</p><div class="modal-actions"><button class="button secondary" id="cancel-vote">Go back</button><button class="button" id="confirm-vote">Confirm vote</button></div></div></div>
+	<script>
+		const STORAGE_KEY = "campus-ballot-demo-v1";
+		const AUTH_KEY = "campus-ballot-demo-role";
+		const TOKEN_KEY = "campus-ballot-access-token";
+		const USER_KEY = "campus-ballot-user";
+		const API_BASE = window.location.protocol === "file:" ? "http://localhost:5000" : window.location.origin;
+		const seed = {
+			election: { name: "Student Council 2026", open: true, closes: "October 2 at 5:00 PM" },
+			elections: [
+				{
+					id: "election-2026",
+					title: "Student Council 2026",
+					status: "ongoing",
+					description: "President of the Student Council",
+					closes: "October 2 at 5:00 PM",
+					candidates: [
+						{ id: "c1", name: "Aarav Mehta", group: "Forward Together", initials: "AM", color: "", votes: 168 },
+						{ id: "c2", name: "Maya Patel", group: "Students First", initials: "MP", color: "coral", votes: 129 },
+						{ id: "c3", name: "Noah Williams", group: "Independent", initials: "NW", color: "yellow", votes: 89 }
+					],
+					ballots: []
+				},
+				{
+					id: "election-2025",
+					title: "Student Council 2025",
+					status: "completed",
+					description: "President of the Student Council",
+					closes: "September 18 at 5:00 PM",
+					winner: "Aarav Mehta",
+					candidates: [
+						{ id: "c4", name: "Aarav Mehta", group: "Forward Together", initials: "AM", color: "", votes: 410 },
+						{ id: "c5", name: "Maya Patel", group: "Students First", initials: "MP", color: "coral", votes: 334 },
+						{ id: "c6", name: "Noah Williams", group: "Independent", initials: "NW", color: "yellow", votes: 201 }
+					],
+					ballots: []
+				}
+			],
+			candidates: [
+				{ id: "c1", name: "Aarav Mehta", group: "Forward Together", initials: "AM", color: "", votes: 168 },
+				{ id: "c2", name: "Maya Patel", group: "Students First", initials: "MP", color: "coral", votes: 129 },
+				{ id: "c3", name: "Noah Williams", group: "Independent", initials: "NW", color: "yellow", votes: 89 }
+			],
+			ballots: [],
+			submissions: [],
+			activity: [
+				{ icon: "✓", text: "Voting is open for Student Council 2026.", time: "Today · 9:00 AM" },
+				{ icon: "+", text: "Candidate registration is available to party heads.", time: "Today · 8:45 AM" },
+				{ icon: "↗", text: "Election workspace prepared by the host.", time: "Yesterday · 4:30 PM" }
+			]
+		};
+		let state;
+		try { state = JSON.parse(localStorage.getItem(STORAGE_KEY)) || structuredClone(seed); } catch { state = structuredClone(seed); }
+		let selectedCandidate = "";
+		let pendingBallot = null;
+		let selectedStudentElection = state.elections?.[0]?.id || "";
+		let selectedHostElectionId = "";
+		const $ = (selector) => document.querySelector(selector);
+		const totalVotes = () => (Array.isArray(state.candidates) ? state.candidates : []).reduce((sum, candidate) => sum + (candidate.votes || 0), 0);
+		const save = () => localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+		const authHeaders = (headers = {}) => {
+			const token = sessionStorage.getItem(TOKEN_KEY);
+			return token ? { ...headers, Authorization: `Bearer ${token}` } : headers;
+		};
+		const getCurrentUser = () => {
+			try {
+				return JSON.parse(sessionStorage.getItem(USER_KEY) || "null");
+			} catch (error) {
+				return null;
+			}
+		};
+		const getCurrentStudentId = () => {
+			const user = getCurrentUser();
+			return user && user.studentId ? String(user.studentId).trim() : "";
+		};
+		const escapeHtml = (value) => String(value).replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
+		function syncElectionState(elections) {
+			if (!Array.isArray(elections) || !elections.length) return;
+			const nextElection = elections.find((election) => election.status === "ongoing") || elections[0];
+			state.elections = elections;
+			state.election = {
+				...state.election,
+				name: nextElection.title,
+				open: nextElection.status === "ongoing",
+				closes: nextElection.closes
+			};
+			state.candidates = Array.isArray(nextElection.candidates) ? nextElection.candidates : [];
+			state.ballots = Array.isArray(nextElection.ballots) ? nextElection.ballots : [];
+			selectedStudentElection = nextElection.id;
+		}
+		async function loadLiveData() {
+			try {
+				const isHost = sessionStorage.getItem(AUTH_KEY) === "host";
+				const [electionsResponse, submissionsResponse] = await Promise.all([
+					isHost ? fetch(`${API_BASE}/api/admin/elections`, { headers: authHeaders() }) : fetch(`${API_BASE}/api/elections`),
+					isHost ? fetch(`${API_BASE}/api/admin/submissions`, { headers: authHeaders() }) : Promise.resolve(null)
+				]);
+				if (!electionsResponse.ok) throw new Error("Unable to fetch elections");
+				if (submissionsResponse && !submissionsResponse.ok) throw new Error("Unable to fetch submissions");
+				const elections = await electionsResponse.json();
+				const submissions = submissionsResponse ? await submissionsResponse.json() : [];
+				if (isHost) {
+					state.hostElections = elections;
+					const selected = elections.find((election) => election.id === selectedHostElectionId) ||
+						elections.find((election) => election.status === "ongoing") || elections[0];
+					if (selected) {
+						selectedHostElectionId = selected.id;
+						state.elections = elections;
+						state.election = { ...state.election, name: selected.title, open: selected.status === "ongoing", closes: selected.closes };
+						state.candidates = Array.isArray(selected.candidates) ? selected.candidates : [];
+						state.ballots = Array.isArray(selected.ballots) ? selected.ballots : [];
+					} else {
+						selectedHostElectionId = "";
+						state.elections = [];
+						state.election = { ...state.election, name: "No election yet", open: false, closes: "Not set" };
+						state.candidates = [];
+						state.ballots = [];
+					}
+				} else {
+					syncElectionState(elections);
+				}
+				state.submissions = Array.isArray(submissions) ? submissions : [];
+				return true;
+			} catch (error) {
+				return false;
+			}
+		}
+		function activatePortal(role) {
+			const host = role === "host";
+			if (!host && role !== "student") return;
+			$("#login-screen").hidden = true;
+			$("#app-shell").hidden = false;
+			document.querySelectorAll("[data-view]").forEach((button) => {
+				const profileAllowed = button.dataset.view === "profile";
+				const allowed = profileAllowed || button.dataset.view === (host ? "host" : "portal");
+				button.hidden = !allowed;
+				button.classList.toggle("active", !profileAllowed && button.dataset.view === (host ? "host" : "portal"));
+			});
+			$("#side-label").textContent = host ? "Host portal" : "Student portal";
+			$("#host-view").classList.toggle("active", host);
+			$("#portal-view").classList.toggle("active", !host);
+			$("#profile-view").classList.toggle("active", false);
+			$("#crumb-current").textContent = host ? "Host console" : "Voter & party head";
+			$("#user-label").textContent = host ? "Election host" : "Student portal";
+			$("#user-avatar").textContent = host ? "EH" : "ST";
+			document.querySelectorAll("[data-tab]").forEach((tab) => {
+				const vote = tab.dataset.tab === "vote";
+				tab.classList.toggle("active", vote);
+				tab.setAttribute("aria-selected", String(vote));
+			});
+			$("#vote-tab").classList.add("active");
+			$("#party-tab").classList.remove("active");
+			render();
+		}
+		function signOut() {
+			sessionStorage.removeItem(AUTH_KEY);
+			sessionStorage.removeItem(TOKEN_KEY);
+			sessionStorage.removeItem(USER_KEY);
+			$("#app-shell").hidden = true;
+			$("#login-screen").hidden = false;
+			$("#login-password").value = "";
+			$("#login-error").textContent = "";
+			$("#login-identity").focus();
+		}
+		function getElectionById(id) {
+			return (state.elections || []).find((election) => election.id === id) || (state.elections || [])[0] || null;
+		}
+		function renderProfileView() {
+			const currentUser = getCurrentUser();
+			const role = (currentUser && currentUser.role) || sessionStorage.getItem(AUTH_KEY) || "student";
+			const isHost = role === "host";
+			const user = currentUser || { name: "Guest User", email: "guest@example.com", role, studentId: "" };
+			const initials = (user.name || "U").split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]).join("").toUpperCase() || "U";
+			const profileName = $("#profile-name");
+			const profileEmail = $("#profile-email");
+			const profileAvatar = $("#profile-avatar");
+			const profileBadge = $("#profile-role-badge");
+			const profileDetailList = $("#profile-detail-list");
+			const profileActivity = $("#profile-activity");
+			if (profileName) profileName.textContent = user.name || "Guest User";
+			if (profileEmail) profileEmail.textContent = user.email || "No email saved";
+			if (profileAvatar) profileAvatar.textContent = initials;
+			if (profileBadge) profileBadge.textContent = isHost ? "Host account" : "Student account";
+			const detailRows = [
+				{ label: "Role", value: isHost ? "Election host" : "Student voter" },
+				{ label: "Email", value: user.email || "Not available" },
+				{ label: "Student ID", value: user.studentId || (isHost ? "N/A" : "Not linked") },
+				{ label: "Account status", value: "Active" },
+				{ label: "Member since", value: user.createdAt ? new Date(user.createdAt).toLocaleDateString() : "Today" }
+			];
+			if (profileDetailList) {
+				profileDetailList.innerHTML = detailRows.map((row) => `
+					<div class="profile-row"><span>${escapeHtml(row.label)}</span><strong>${escapeHtml(row.value)}</strong></div>
+				`).join("");
+			}
+			const activeElectionCount = (state.elections || []).filter((election) => election.status === "ongoing").length;
+			const votesCast = isHost ? (state.ballots || []).length : (state.elections || []).reduce((count, election) => count + ((election.ballots || []).filter((ballot) => ballot.userId === user.id || String(ballot.studentId).toLowerCase() === String(user.studentId || "").toLowerCase()).length), 0);
+			const activeElection = (state.elections || []).find((election) => election.status === "ongoing") || (state.elections || [])[0] || null;
+			const liveVoteTotal = activeElection && Array.isArray(activeElection.candidates)
+				? activeElection.candidates.reduce((sum, candidate) => sum + Number(candidate.votes || 0), 0)
+				: 0;
+			const eligibleStudents = 1248;
+			const baseParticipation = liveVoteTotal > 0 ? Math.min(100, Math.round((liveVoteTotal / eligibleStudents) * 100)) : 0;
+			const participationTrend = baseParticipation > 0
+				? [12, 18, 22, 28, 31, 34, baseParticipation].map((value) => Math.min(100, Math.max(8, Math.round(value))))
+				: [0, 0, 0, 0, 0, 0, 0];
+			const chart = document.querySelector(".sparkline");
+			if (chart) {
+				chart.innerHTML = participationTrend.map((value) => `<span style="height: ${value}%"></span>`).join("");
+			}
+			if (document.querySelector("#profile-active-elections")) document.querySelector("#profile-active-elections").textContent = String(activeElectionCount);
+			if (document.querySelector("#profile-votes-cast")) document.querySelector("#profile-votes-cast").textContent = String(votesCast);
+			if (document.querySelector("#profile-role-count")) document.querySelector("#profile-role-count").textContent = isHost ? "Host" : "Student";
+			if (profileActivity) {
+				const recentItems = Array.isArray(state.activity) ? state.activity.slice(0, 4) : [];
+				profileActivity.innerHTML = recentItems.length ? recentItems.map((item) => `
+					<div class="activity"><div class="activity-icon">${escapeHtml(item.icon)}</div><p>${escapeHtml(item.text)}<small>${escapeHtml(item.time)}</small></p></div>
+				`).join("") : '<div class="empty-list">No recent account activity yet.</div>';
+			}
+		}
+		function renderStudentElections() {
+			const activeWrap = $("#active-elections");
+			const completedWrap = $("#completed-elections");
+			if (!activeWrap || !completedWrap) return;
+			const activeElections = (state.elections || []).filter((election) => election.status === "ongoing");
+			const completedElections = (state.elections || []).filter((election) => election.status === "completed");
+			if (!activeElections.length) {
+				activeWrap.innerHTML = '<div class="empty-list">No active elections are currently open.</div>';
+			} else {
+				activeWrap.innerHTML = activeElections.map((election) => `
+					<div class="election-card ${selectedStudentElection === election.id ? "selected" : ""}" data-election-id="${election.id}">
+						<div class="election-card-head">
+							<div>
+								<h3>${escapeHtml(election.title)}</h3>
+								<p>${escapeHtml(election.description)}</p>
+							</div>
+							<span class="election-tag open">Open</span>
+						</div>
+						<p style="margin-top: 12px;">Voting closes: ${escapeHtml(election.closes)}</p>
+					</div>
+				`).join("");
+			}
+			if (!completedElections.length) {
+				completedWrap.innerHTML = '<div class="empty-list">No completed elections yet.</div>';
+			} else {
+				completedWrap.innerHTML = completedElections.map((election) => `
+					<div class="election-card ${selectedStudentElection === election.id ? "selected" : ""}" data-election-id="${election.id}">
+						<div class="election-card-head">
+							<div>
+								<h3>${escapeHtml(election.title)}</h3>
+								<p>${escapeHtml(election.description)}</p>
+							</div>
+							<span class="election-tag closed">Closed</span>
+						</div>
+						<p style="margin-top: 12px;">Winner: ${escapeHtml(election.winner || "Pending")}</p>
+					</div>
+				`).join("");
+			}
+			document.querySelectorAll("[data-election-id]").forEach((card) => {
+				card.addEventListener("click", () => {
+					selectedStudentElection = card.dataset.electionId;
+					renderStudentElections();
+					renderStudentElectionDetail();
+				});
+			});
+			renderStudentElectionDetail();
+		}
+		function renderStudentElectionDetail() {
+			const detail = $("#election-detail");
+			if (!detail) return;
+			const election = getElectionById(selectedStudentElection);
+			if (!election) {
+				detail.innerHTML = '<div class="empty-list">Select an election to view details.</div>';
+				return;
+			}
+			if (election.status === "ongoing") {
+				const total = election.candidates.reduce((sum, candidate) => sum + candidate.votes, 0);
+				detail.innerHTML = `
+					<div class="detail-card">
+						<div class="detail-header">
+							<div>
+								<p class="eyebrow" style="margin:0 0 6px;">Election in progress</p>
+								<h3>${escapeHtml(election.title)}</h3>
+							</div>
+							<span class="pill"><i class="dot"></i><span>Voting open</span></span>
+						</div>
+						<div class="detail-body">
+							<div class="selection-meta"><span>${escapeHtml(election.description)}</span><span>${escapeHtml(election.closes)}</span></div>
+							<div class="candidate-vote-list">
+								${election.candidates.map((candidate) => `
+									<div class="vote-option">
+										<div class="candidate-avatar ${candidate.color || ""}">${escapeHtml(candidate.initials || candidate.name.split(/\s+/).map((part) => part[0]).slice(0, 2).join(""))}</div>
+										<div class="candidate-info"><strong>${escapeHtml(candidate.name)}</strong><span>${escapeHtml(candidate.group)}</span></div>
+										<button class="button small" type="button" data-cast-vote="${candidate.id}">Cast vote</button>
+									</div>
+								`).join("")}
+							</div>
+						</div>
+					</div>
+				`;
+				const buttons = detail.querySelectorAll("[data-cast-vote]");
+				buttons.forEach((button) => button.addEventListener("click", () => {
+					const candidate = election.candidates.find((item) => item.id === button.dataset.castVote);
+					if (!candidate) return;
+					const studentId = getCurrentStudentId();
+					pendingBallot = { electionId: election.id, candidateId: candidate.id, studentId };
+					$("#confirm-copy").textContent = `You are voting for ${candidate.name}. This action will finalize your ballot for ${election.title}.`;
+					$("#confirm-title").textContent = "Confirm your vote";
+					$("#confirm-modal").classList.add("open");
+					$("#confirm-vote").focus();
+				}));
+				return;
+			}
+			detail.innerHTML = `
+				<div class="detail-card">
+					<div class="detail-header">
+						<div>
+							<p class="eyebrow" style="margin:0 0 6px;">Results finalized</p>
+							<h3>${escapeHtml(election.title)}</h3>
+						</div>
+						<span class="election-tag closed">Completed</span>
+					</div>
+					<div class="detail-body">
+						<div class="winner-box"><div><strong>${escapeHtml(election.winner || "Winner pending")}</strong><span>Winning candidate</span></div><span class="winner-badge">Winner</span></div>
+						<div class="candidate-vote-list" style="margin-top: 18px;">
+							${election.candidates.map((candidate) => `
+								<div class="vote-option">
+									<div class="candidate-avatar ${candidate.color || ""}">${escapeHtml(candidate.initials || candidate.name.split(/\s+/).map((part) => part[0]).slice(0, 2).join(""))}</div>
+									<div class="candidate-info"><strong>${escapeHtml(candidate.name)}</strong><span>${escapeHtml(candidate.group)}</span></div>
+									<span class="vote-pill">${candidate.votes.toLocaleString()} votes</span>
+								</div>
+							`).join("")}
+						</div>
+					</div>
+				</div>
+			`;
+		}
+		function updateCandidatePosition() {
+			const election = (state.elections || []).find((item) => item.id === $("#candidate-election").value);
+			$("#candidate-position").value = election?.description || "";
+		}
+		function render() {
+			if (!$("#app-shell") || $("#app-shell").hidden) {
+				return;
+			}
+			renderProfileView();
+			const total = totalVotes();
+			const isHost = sessionStorage.getItem(AUTH_KEY) === "host";
+			const hostElections = state.hostElections || [];
+			const hasHostElection = !isHost || hostElections.length > 0;
+			const status = state.election.open ? "Voting open" : "Voting closed";
+			const hostElectionSelect = $("#host-election-select");
+			if (hostElectionSelect) {
+				hostElectionSelect.hidden = !isHost || hostElections.length < 2;
+				hostElectionSelect.innerHTML = hostElections.map((election) => `<option value="${escapeHtml(election.id)}">${escapeHtml(election.title)}</option>`).join("");
+				hostElectionSelect.value = selectedHostElectionId;
+			}
+			$("#no-host-elections").hidden = !isHost || hasHostElection;
+			$("#host-election-metrics").hidden = isHost && !hasHostElection;
+			$("#host-election-dashboard").hidden = isHost && !hasHostElection;
+			$("#toggle-election").disabled = isHost && !hasHostElection;
+			renderStudentElections();
+			const sideElectionName = $("#side-election-name");
+			if (sideElectionName) sideElectionName.textContent = state.election.name;
+			const sideElectionStatus = $("#side-election-status");
+			if (sideElectionStatus) sideElectionStatus.textContent = status;
+			const hostStatusPill = $("#host-status-pill");
+			if (hostStatusPill) hostStatusPill.textContent = status;
+			const portalStatus = $("#portal-status");
+			if (portalStatus) portalStatus.textContent = status;
+			const bannerElectionName = $("#banner-election-name");
+			if (bannerElectionName) bannerElectionName.textContent = state.election.name;
+			const ballotElectionName = $("#ballot-election-name");
+			if (ballotElectionName) ballotElectionName.textContent = state.election.name;
+			const detailName = $("#detail-name");
+			if (detailName) detailName.textContent = state.election.name;
+			const bannerDates = $("#banner-dates");
+			if (bannerDates) bannerDates.textContent = `Voting closes ${state.election.closes}`;
+			const detailCloses = $("#detail-closes");
+			if (detailCloses) detailCloses.textContent = state.election.closes.replace(" at ", " · ").replace("October", "Oct");
+			const bannerVotes = $("#banner-votes");
+			if (bannerVotes) bannerVotes.textContent = total.toLocaleString();
+			const voteCount = $("#vote-count");
+			if (voteCount) voteCount.textContent = total.toLocaleString();
+			const candidateCount = $("#candidate-count");
+			if (candidateCount) candidateCount.textContent = state.candidates.length;
+			const participation = $("#participation");
+			if (participation) participation.textContent = `${Math.round(total / 1248 * 100)}% participation`;
+			const toggleElection = $("#toggle-election");
+			if (toggleElection) {
+				toggleElection.textContent = state.election.open ? "Close voting" : "Reopen voting";
+				toggleElection.classList.toggle("danger", state.election.open);
+			}
+			const max = Math.max(1, ...state.candidates.map((candidate) => candidate.votes));
+			const standings = $("#standings");
+			if (standings) {
+				standings.innerHTML = state.candidates.length ? state.candidates.map((candidate, index) => `
+					<div class="candidate-row"><div class="candidate-avatar ${candidate.color || (index ? "coral" : "")}">${escapeHtml(candidate.initials || candidate.name.split(/\s+/).map((part) => part[0]).slice(0, 2).join(""))}</div><div class="candidate-info"><strong>${escapeHtml(candidate.name)}</strong><span>${escapeHtml(candidate.group)}</span></div><div class="bar-wrap"><div class="bar-meta"><span>${candidate.votes.toLocaleString()} votes</span><span>${total ? Math.round(candidate.votes / total * 100) : 0}%</span></div><div class="bar"><i class="${index === 1 ? "coral-fill" : index > 1 ? "yellow-fill" : ""}" style="width:${candidate.votes / max * 100}%"></i></div></div></div>`).join("") : `<div class="empty-state">No approved candidates yet.</div>`;
+			}
+			const candidateChoices = $("#candidate-choices");
+			if (candidateChoices) {
+				candidateChoices.innerHTML = state.candidates.map((candidate, index) => `<button type="button" class="candidate-choice ${selectedCandidate === candidate.id ? "selected" : ""}" data-candidate="${escapeHtml(candidate.id)}" ${!state.election.open ? "disabled" : ""}><div class="candidate-avatar ${candidate.color || (index ? "coral" : "")}">${escapeHtml(candidate.initials || candidate.name.split(/\s+/).map((part) => part[0]).slice(0, 2).join(""))}</div><div class="candidate-info"><strong>${escapeHtml(candidate.name)}</strong><span>${escapeHtml(candidate.group)}</span></div><span class="choice-radio" aria-hidden="true"></span></button>`).join("") || `<div class="empty-state"><strong>No candidates available</strong>Check back after the host approves candidate submissions.</div>`;
+				candidateChoices.querySelectorAll("[data-candidate]").forEach((button) => button.addEventListener("click", () => { selectedCandidate = button.dataset.candidate; render(); }));
+			}
+			const candidateElectionSelect = $("#candidate-election");
+			if (candidateElectionSelect) {
+				const openElections = (state.elections || []).filter((election) => election.status === "ongoing");
+				const selectedElectionId = candidateElectionSelect.value;
+				candidateElectionSelect.innerHTML = openElections.map((election) => `<option value="${escapeHtml(election.id)}">${escapeHtml(election.title)}</option>`).join("");
+				if (openElections.some((election) => election.id === selectedElectionId)) candidateElectionSelect.value = selectedElectionId;
+				candidateElectionSelect.disabled = openElections.length === 0;
+				updateCandidatePosition();
+			}
+			const submitVoteButton = $("#submit-vote");
+			if (submitVoteButton) {
+				submitVoteButton.disabled = !state.election.open || !state.candidates.length;
+				submitVoteButton.style.opacity = submitVoteButton.disabled ? ".55" : "1";
+			}
+			const candidateSubmitButton = $("#candidate-form")?.querySelector("button[type=submit]");
+			if (candidateSubmitButton) {
+				candidateSubmitButton.disabled = !state.election.open;
+				candidateSubmitButton.style.opacity = state.election.open ? "1" : ".55";
+			}
+			const requestCount = $("#request-count");
+			const requestList = $("#request-list");
+			const activityList = $("#activity-list");
+			const pending = state.submissions.filter((submission) => submission.status === "Pending");
+			if (requestCount) requestCount.textContent = `${pending.length} pending`;
+			if (requestList) {
+				requestList.innerHTML = state.submissions.length ? `<div class="requests">${state.submissions.map((submission) => `<div class="request-item"><div class="candidate-avatar">${escapeHtml(submission.initials)}</div><div class="candidate-info"><strong>${escapeHtml(submission.name)} · ${escapeHtml(submission.group)}</strong><span>${escapeHtml(submission.studentId)} · ${escapeHtml(state.elections.find((election) => election.id === submission.electionId)?.title || "Election")} · ${escapeHtml(submission.manifesto)}</span></div>${submission.status === "Pending" ? `<button class="button small" data-approve="${escapeHtml(submission.id)}">Approve</button>` : `<span class="request-state">${escapeHtml(submission.status)}</span>`}</div>`).join("")}</div>` : `<div class="empty-state"><strong>No submissions yet</strong>Candidate registrations will appear here for host review.</div>`;
+				requestList.querySelectorAll("[data-approve]").forEach((button) => button.addEventListener("click", () => approveSubmission(button.dataset.approve)));
+			}
+			if (activityList) {
+				activityList.innerHTML = state.activity.slice(0, 5).map((item) => `<div class="activity"><div class="activity-icon">${escapeHtml(item.icon)}</div><p>${escapeHtml(item.text)}<small>${escapeHtml(item.time)}</small></p></div>`).join("");
+			}
+			const sideElectionStatusDot = $("#side-election-status")?.previousElementSibling;
+			if (sideElectionStatusDot) sideElectionStatusDot.style.background = state.election.open ? "#76cf93" : "#e58b68";
+			const hostStatusDot = $("#host-status-pill")?.previousElementSibling;
+			if (hostStatusDot) hostStatusDot.style.background = state.election.open ? "#76cf93" : "#e58b68";
+			const portalStatusDot = $("#portal-status")?.previousElementSibling;
+			if (portalStatusDot) portalStatusDot.style.background = state.election.open ? "#76cf93" : "#e58b68";
+		}
+		function addActivity(icon, text) {
+			state.activity.unshift({ icon, text, time: `Today · ${new Intl.DateTimeFormat([], { hour: "numeric", minute: "2-digit" }).format(new Date())}` });
+		}
+		function toast(message) {
+			const element = $("#toast"); element.textContent = message; element.classList.add("show");
+			window.setTimeout(() => element.classList.remove("show"), 2600);
+		}
+		async function approveSubmission(id) {
+			const submission = state.submissions.find((item) => item.id === id);
+			if (!submission || submission.status !== "Pending") return;
+			try {
+				const response = await fetch(`${API_BASE}/api/admin/submissions/${id}/approve`, {
+					method: "POST",
+					headers: authHeaders({ "Content-Type": "application/json" })
+				});
+				const result = await response.json();
+				if (!response.ok) throw new Error(result.message || "Approval failed");
+				await loadLiveData();
+				render();
+				toast("Candidate approved and added to the ballot.");
+			} catch (error) {
+				toast(error.message || "Unable to approve candidate.");
+			}
+		}
+		$("#login-form").addEventListener("submit", async (event) => {
+			event.preventDefault();
+			const identity = $("#login-identity").value.trim().toLowerCase();
+			const password = $("#login-password").value;
+			try {
+				const response = await fetch(`${API_BASE}/api/auth/login`, {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({ email: identity, password })
+				});
+				const result = await response.json();
+				if (!response.ok) throw new Error(result.message || "Login failed");
+				if (result.user && result.accessToken) {
+					sessionStorage.setItem(TOKEN_KEY, result.accessToken);
+					sessionStorage.setItem(AUTH_KEY, result.user.role);
+					sessionStorage.setItem(USER_KEY, JSON.stringify(result.user));
+					await loadLiveData();
+					$("#login-error").textContent = "";
+					activatePortal(result.user.role);
+				}
+			} catch (error) {
+				$("#login-error").textContent = error.message || "Unable to reach the backend. Check that the API is running.";
+			}
+		});
+		$("#show-signup").addEventListener("click", () => {
+			$("#login-form").hidden = true;
+			$("#show-signup").hidden = true;
+			$("#show-host-signup").hidden = true;
+			$(".demo-credentials").hidden = true;
+			$("#signup-form").hidden = false;
+			$("#signup-name").focus();
+		});
+		$("#show-login").addEventListener("click", () => {
+			$("#signup-form").hidden = true;
+			$("#host-signup-form").hidden = true;
+			$("#login-form").hidden = false;
+			$("#show-signup").hidden = false;
+			$("#show-host-signup").hidden = false;
+			$(".demo-credentials").hidden = false;
+			$("#login-identity").focus();
+		});
+		$("#show-host-signup").addEventListener("click", () => {
+			$("#login-form").hidden = true;
+			$("#show-signup").hidden = true;
+			$("#show-host-signup").hidden = true;
+			$(".demo-credentials").hidden = true;
+			$("#host-signup-form").hidden = false;
+			$("#host-signup-name").focus();
+		});
+		$("#host-show-login").addEventListener("click", () => $("#show-login").click());
+		$("#send-student-verification").addEventListener("click", async () => {
+			const emailInput = $("#signup-email");
+			if (!emailInput.reportValidity()) return;
+			const button = $("#send-student-verification");
+			button.disabled = true;
+			$("#signup-error").textContent = "";
+			try {
+				const response = await fetch(`${API_BASE}/api/auth/student-verification`, {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({ email: emailInput.value.trim() })
+				});
+				const result = await response.json();
+				if (!response.ok) throw new Error(result.message || "Unable to send verification code.");
+				$("#signup-error").textContent = result.message;
+				$("#signup-verification-code").focus();
+			} catch (error) {
+				$("#signup-error").textContent = error.message || "Unable to send verification code.";
+			} finally {
+				button.disabled = false;
+			}
+		});
+		$("#signup-form").addEventListener("submit", async (event) => {
+			event.preventDefault();
+			$("#signup-error").textContent = "";
+			try {
+				const response = await fetch(`${API_BASE}/api/auth/register`, {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({
+						name: $("#signup-name").value.trim(),
+						email: $("#signup-email").value.trim(),
+						studentId: $("#signup-student-id").value.trim(),
+						password: $("#signup-password").value,
+						verificationCode: $("#signup-verification-code").value.trim()
+					})
+				});
+				const result = await response.json();
+				if (!response.ok) throw new Error(result.message || "Account creation failed");
+				sessionStorage.setItem(TOKEN_KEY, result.accessToken);
+				sessionStorage.setItem(AUTH_KEY, result.user.role);
+				sessionStorage.setItem(USER_KEY, JSON.stringify(result.user));
+				await loadLiveData();
+				activatePortal(result.user.role);
+			} catch (error) {
+				$("#signup-error").textContent = error.message || "Unable to create your account.";
+			}
+		});
+		$("#host-signup-form").addEventListener("submit", async (event) => {
+			event.preventDefault();
+			$("#host-signup-error").textContent = "";
+			try {
+				const response = await fetch(`${API_BASE}/api/auth/register-host`, {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({
+						name: $("#host-signup-name").value.trim(),
+						email: $("#host-signup-email").value.trim(),
+						password: $("#host-signup-password").value,
+						inviteCode: $("#host-invite-code").value
+					})
+				});
+				const result = await response.json();
+				if (!response.ok) throw new Error(result.message || "Host account creation failed");
+				sessionStorage.setItem(TOKEN_KEY, result.accessToken);
+				sessionStorage.setItem(AUTH_KEY, result.user.role);
+				sessionStorage.setItem(USER_KEY, JSON.stringify(result.user));
+				await loadLiveData();
+				activatePortal(result.user.role);
+			} catch (error) {
+				$("#host-signup-error").textContent = error.message || "Unable to create host account.";
+			}
+		});
+		$("#host-election-select").addEventListener("change", async () => {
+			selectedHostElectionId = $("#host-election-select").value;
+			await loadLiveData();
+			render();
+		});
+		$("#refresh-submissions").addEventListener("click", async () => {
+			const button = $("#refresh-submissions");
+			button.disabled = true;
+			try {
+				if (!await loadLiveData()) throw new Error("Unable to refresh submissions.");
+				render();
+			} catch (error) {
+				toast(error.message || "Unable to refresh submissions.");
+			} finally {
+				button.disabled = false;
+			}
+		});
+		$("#show-create-election").addEventListener("click", () => {
+			$("#create-election-form").hidden = false;
+			$("#new-election-title").focus();
+		});
+		$("#cancel-create-election").addEventListener("click", () => {
+			$("#create-election-form").reset();
+			$("#create-election-form").hidden = true;
+			$("#create-election-error").textContent = "";
+		});
+		$("#create-election-form").addEventListener("submit", async (event) => {
+			event.preventDefault();
+			$("#create-election-error").textContent = "";
+			const [year, month, day] = $("#new-election-closes").value.split("-").map(Number);
+			const closes = new Date(year, month - 1, day).toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" });
+			try {
+				const response = await fetch(`${API_BASE}/api/elections`, {
+					method: "POST",
+					headers: authHeaders({ "Content-Type": "application/json" }),
+					body: JSON.stringify({
+						title: $("#new-election-title").value.trim(),
+						description: $("#new-election-description").value.trim(),
+						closes
+					})
+				});
+				const result = await response.json();
+				if (!response.ok) throw new Error(result.message || "Election creation failed");
+				selectedHostElectionId = result.election.id;
+				$("#create-election-form").reset();
+				$("#create-election-form").hidden = true;
+				await loadLiveData();
+				render();
+				toast("Election created and opened for voting.");
+			} catch (error) {
+				$("#create-election-error").textContent = error.message || "Unable to create election.";
+			}
+		});
+		$("#logout-button").addEventListener("click", signOut);
+		document.querySelectorAll("[data-view]").forEach((button) => button.addEventListener("click", async () => {
+			const role = sessionStorage.getItem(AUTH_KEY);
+			const view = button.dataset.view;
+			const isHostView = view === "host";
+			const isProfileView = view === "profile";
+			if ((isHostView && role !== "host") || (!isHostView && !isProfileView && role !== "student")) return;
+			if (isHostView) {
+				await loadLiveData();
+			}
+			document.querySelectorAll("[data-view]").forEach((item) => item.classList.toggle("active", item === button));
+			$("#host-view").classList.toggle("active", isHostView); $("#portal-view").classList.toggle("active", !isHostView && !isProfileView); $("#profile-view").classList.toggle("active", isProfileView);
+			$("#crumb-current").textContent = isProfileView ? "User profile" : isHostView ? "Host console" : "Voter & party head";
+			$("#user-label").textContent = isProfileView ? (role === "host" ? "Election host" : "Student portal") : (isHostView ? "Election host" : "Student portal");
+			$("#user-avatar").textContent = role === "host" ? "EH" : "ST";
+			render();
+		}));
+		document.querySelectorAll("[data-tab]").forEach((button) => button.addEventListener("click", () => {
+			const vote = button.dataset.tab === "vote";
+			document.querySelectorAll("[data-tab]").forEach((item) => { item.classList.toggle("active", item === button); item.setAttribute("aria-selected", String(item === button)); });
+			$("#vote-tab").classList.toggle("active", vote); $("#party-tab").classList.toggle("active", !vote);
+		}));
+		$("#toggle-election").addEventListener("click", async () => {
+			if (!selectedHostElectionId) return;
+			const status = state.election.open ? "completed" : "ongoing";
+			try {
+				const response = await fetch(`${API_BASE}/api/elections/${selectedHostElectionId}`, {
+					method: "PATCH",
+					headers: authHeaders({ "Content-Type": "application/json" }),
+					body: JSON.stringify({ status })
+				});
+				const result = await response.json();
+				if (!response.ok) throw new Error(result.message || "Unable to update election.");
+				await loadLiveData();
+				render();
+				toast(status === "ongoing" ? "Voting is open." : "Voting has been closed.");
+			} catch (error) {
+				toast(error.message || "Unable to update election.");
+			}
+		});
+		$("#edit-election").addEventListener("click", async () => {
+			const updated = window.prompt("Election name", state.election.name);
+			if (!updated || !updated.trim() || !selectedHostElectionId) return;
+			try {
+				const response = await fetch(`${API_BASE}/api/elections/${selectedHostElectionId}`, {
+					method: "PATCH",
+					headers: authHeaders({ "Content-Type": "application/json" }),
+					body: JSON.stringify({ title: updated.trim().slice(0, 100) })
+				});
+				const result = await response.json();
+				if (!response.ok) throw new Error(result.message || "Unable to update election.");
+				await loadLiveData();
+				render();
+				toast("Election name updated.");
+			} catch (error) {
+				toast(error.message || "Unable to update election.");
+			}
+		});
+		if ($("#submit-vote")) {
+			$("#submit-vote").addEventListener("click", () => {
+				const studentId = $("#student-id").value.trim();
+				const message = $("#vote-message"); message.classList.remove("success");
+				if (!state.election.open) { message.textContent = "Voting is currently closed."; return; }
+				if (studentId.length < 4) { message.textContent = "Enter a valid student ID (at least 4 characters)."; $("#student-id").focus(); return; }
+				if (!selectedCandidate) { message.textContent = "Choose one candidate before continuing."; return; }
+				if (state.ballots.some((ballot) => ballot.studentId.toLowerCase() === studentId.toLowerCase())) { message.textContent = "A ballot has already been recorded for this ID in this browser."; return; }
+				pendingBallot = { studentId, candidateId: selectedCandidate };
+				$("#confirm-copy").textContent = `You selected ${state.candidates.find((candidate) => candidate.id === selectedCandidate)?.name}. Your vote cannot be changed after it is submitted.`;
+				$("#confirm-modal").classList.add("open"); $("#confirm-vote").focus();
+			});
+		}
+		$("#cancel-vote").addEventListener("click", () => { pendingBallot = null; $("#confirm-modal").classList.remove("open"); });
+		$("#confirm-vote").addEventListener("click", async () => {
+			if (!pendingBallot) return;
+			const election = getElectionById(pendingBallot.electionId);
+			if (!election) return;
+			const studentId = pendingBallot.studentId || getCurrentStudentId();
+			if (!studentId) {
+				toast("Your student ID is missing. Please sign in again and try the vote again.");
+				return;
+			}
+			pendingBallot.studentId = studentId;
+			try {
+				const response = await fetch(`${API_BASE}/api/elections/${election.id}/vote`, {
+					method: "POST",
+					headers: authHeaders({ "Content-Type": "application/json" }),
+					body: JSON.stringify({ studentId, candidateId: pendingBallot.candidateId })
+				});
+				const result = await response.json();
+				if (!response.ok) {
+					throw new Error(result.message || "Vote failed");
+				}
+				await loadLiveData();
+				pendingBallot = null;
+				$("#confirm-modal").classList.remove("open");
+				toast(result.message || "Vote submitted successfully.");
+				render();
+			} catch (error) {
+				toast(error.message || "Unable to submit vote.");
+			}
+		});
+		if ($("#vote-again-info")) {
+			$("#vote-again-info").addEventListener("click", () => { $("#vote-success").classList.remove("show"); $("#ballot-form").style.display = "block"; $("#student-id").value = ""; selectedCandidate = ""; render(); });
+		}
+		$("#candidate-form").addEventListener("submit", async (event) => {
+			event.preventDefault();
+			const studentId = $("#candidate-id").value.trim();
+			const existing = state.submissions.some((item) => item.studentId.toLowerCase() === studentId.toLowerCase()) || state.candidates.some((item) => item.studentId?.toLowerCase() === studentId.toLowerCase());
+			if (existing) { $("#candidate-message").textContent = "A candidacy submission already exists for this student ID."; return; }
+			const name = $("#candidate-name").value.trim();
+			const group = $("#candidate-party").value.trim();
+			const manifesto = $("#candidate-manifesto").value.trim();
+			const electionName = $("#candidate-election").selectedOptions[0]?.textContent || "the selected election";
+			try {
+				const response = await fetch(`${API_BASE}/api/candidates/apply`, {
+					method: "POST",
+					headers: authHeaders({ "Content-Type": "application/json" }),
+					body: JSON.stringify({ name, studentId, group, manifesto, electionId: $("#candidate-election").value })
+				});
+				const result = await response.json();
+				if (!response.ok) throw new Error(result.message || "Submission failed.");
+				await loadLiveData();
+				$("#candidate-form").reset(); updateCandidatePosition();
+				$("#candidate-message").textContent = `Submitted for ${electionName}. Only that election's host can review it.`; $("#candidate-message").classList.add("success"); toast("Candidacy sent to the host for review.");
+				render();
+			} catch (error) {
+				$("#candidate-message").textContent = error.message || "Unable to submit candidacy.";
+			}
+		});
+		$("#candidate-election").addEventListener("change", updateCandidatePosition);
+		$("#confirm-modal").addEventListener("click", (event) => { if (event.target === $("#confirm-modal")) $("#cancel-vote").click(); });
+		document.addEventListener("keydown", (event) => { if (event.key === "Escape") $("#cancel-vote").click(); });
+		render();
+		const savedRole = sessionStorage.getItem(AUTH_KEY);
+		if ((savedRole === "host" || savedRole === "student") && sessionStorage.getItem(TOKEN_KEY)) activatePortal(savedRole);
+		else { sessionStorage.removeItem(AUTH_KEY); sessionStorage.removeItem(TOKEN_KEY); }
+	</script>
+</body>
+</html>

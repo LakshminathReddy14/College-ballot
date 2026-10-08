@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: campus-ballot
+    runtime: node
+    plan: free
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        generateValue: true
+      - key: MONGODB_URI
+        sync: false
+      - key: HOST_INVITE_CODE
+        sync: false
+      - key: STUDENT_EMAIL_DOMAIN
+        value: mvsrec.edu.in
+      - key: REQUIRE_STUDENT_EMAIL_VERIFICATION
+        value: "true"
+      - key: RESEND_API_KEY
+        sync: false
+      - key: EMAIL_FROM
+        sync: false
